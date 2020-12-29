@@ -111,7 +111,7 @@ const App = () => {
 
   let ph = statistic.map(data => parseFloat(data.ph)) // membuat array untuk data pH
   const suhu = statistic.map(data => data.suhu) // membuat array untuk data suhu
-  const nutrisi = statistic.map(data => data.nutrisi) // membuat array unutk data nutrisi
+  const nutrisi = statistic.map(data => parseInt(data.nutrisi)) // membuat array unutk data nutrisi
 
   // option konfigurasi untuk grafik
   const optionPH = {
@@ -167,7 +167,7 @@ const App = () => {
   const phValue = parseFloat(ph[ph.length - 1]) // data pH terbaru
   const isOnPHUp = phValue < PH_UP // ketentuan untuk pompa pH UP menyala
   const isOnPHDown = phValue > PH_DOWN // ketentuan untuk pompa pH Down menyala
-  const isOnNutrisi = nutrisi[nutrisi.length - 1] < NUTRISI // ketentuan untuk pompa nutrisi menyala
+  const isOnNutrisi = parseInt(nutrisi[nutrisi.length - 1]) < NUTRISI // ketentuan untuk pompa nutrisi menyala
 
   // fungsi untuk mengirimkan notifikasi
   useEffect(() => {
@@ -255,7 +255,7 @@ const App = () => {
                   <Card className="mb-3 shadow">
                     <Card.Body className="p-2">
                       <h5>Nutrisi</h5>
-                      <h2 className="text-center display-4">{nutrisi[nutrisi.length - 1]} ppm</h2>
+                      <h2 className="text-center display-4">{parseInt(nutrisi[nutrisi.length - 1])} ppm</h2>
                     </Card.Body>
                   </Card>
 
