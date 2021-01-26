@@ -32,23 +32,6 @@ const AirGraph = ({ data }) => {
         position={{ gender: 'Tinggi Air', value: 50, }}
         style={{ fontSize: 30, textAlign: 'center', }}
       />
-      {/*
-        {dataWater.map((row, index) => {
-          return (
-            <Guide
-              key={index}
-              type="text"
-              top={true}
-              content={row.value + '%'}
-              position={{ gender: row.gender, value: 50, }}
-              style={{
-                fontSize: 30,
-                textAlign: 'center',
-              }}
-            />
-          );
-        })}
-      */}
     </ViserChart>
   )
 }
