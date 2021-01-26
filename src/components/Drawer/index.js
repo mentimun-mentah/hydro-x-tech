@@ -43,7 +43,7 @@ const DrawerValueForm = ({ visible, onClose, client }) => {
     if(checkString === "|") checkString = dataString.slice(0, -1)
     else checkString = dataString
 
-    client.send(checkString)
+    client.send(checkString) // fungsi untuk mengirim data ke arduino
   }
 
   return(
@@ -63,7 +63,6 @@ const DrawerValueForm = ({ visible, onClose, client }) => {
                 <InputNumber 
                   min={0} 
                   max={10} 
-                  step={0.1} 
                   className="w-100"
                   placeholder="PH UP" 
                   value={ph_up.value}
@@ -76,7 +75,6 @@ const DrawerValueForm = ({ visible, onClose, client }) => {
                 <InputNumber 
                   min={0} 
                   max={10} 
-                  step={0.1} 
                   className="w-100"
                   placeholder="PH DOWN" 
                   value={ph_down.value}
