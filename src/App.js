@@ -228,7 +228,7 @@ const App = () => {
                   <Card className="mb-3 shadow">
                     <Card.Body className="p-2">
                       <h5>Tinggi Air</h5>
-                      <AirGraph data={parseInt(ta[ta.length - 1])} />
+                      <AirGraph data={parseInt(ta[ta.length - 1]) ? parseInt(ta[ta.length - 1]) : 0} />
                     </Card.Body>
                   </Card>
 
