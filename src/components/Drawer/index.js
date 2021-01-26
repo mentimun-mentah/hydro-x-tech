@@ -1,20 +1,13 @@
-import { useState } from 'react';
 import { Drawer, Form, Button, Col, Row, InputNumber } from 'antd';
 
-import { formEditValue } from '../../formdata/formEditValue'
-
-const DrawerValueForm = ({ visible, onClose, client }) => {
-  const [setting, setSetting] = useState(formEditValue)
-  const { ph_up, ph_down, kalibrasi_ph, kalibrasi_tds, tds } = setting
+const DrawerValueForm = ({ visible, onClose, client, setting, setSetting }) => {
 
   const onSettingChange = (e, item) => {
-    if(item){
-      const data = {
-        ...setting,
-        [item]: { ...setting[item], value: e, isValid: true, message: null }
-      }
-      setSetting(data)
+    const data = {
+      ...setting,
+      [item]: { ...setting[item], value: e, isValid: true, message: null }
     }
+    setSetting(data)
   }
 
   const onSubmit = e => {
@@ -38,13 +31,17 @@ const DrawerValueForm = ({ visible, onClose, client }) => {
       dataString += "st:" + tds.value + "|"
     }
 
+
     let checkString = dataString.slice(-1)
     // check jika ada "|" pada string terakhir dan hapus jika true
     if(checkString === "|") checkString = dataString.slice(0, -1)
     else checkString = dataString
 
-    client.send(checkString) // fungsi untuk mengirim data ke arduino
+    client.send("setting|" + checkString) // fungsi untuk mengirim data ke arduino
+    client.send("setting|" + checkString) // fungsi untuk mengirim data ke arduino
   }
+
+  const { ph_up, ph_down, kalibrasi_ph, kalibrasi_tds, tds } = setting
 
   return(
     <>
@@ -63,6 +60,7 @@ const DrawerValueForm = ({ visible, onClose, client }) => {
                 <InputNumber 
                   min={0} 
                   max={10} 
+                  step={0.1}
                   className="w-100"
                   placeholder="PH UP" 
                   value={ph_up.value}
@@ -75,6 +73,7 @@ const DrawerValueForm = ({ visible, onClose, client }) => {
                 <InputNumber 
                   min={0} 
                   max={10} 
+                  step={0.1}
                   className="w-100"
                   placeholder="PH DOWN" 
                   value={ph_down.value}
