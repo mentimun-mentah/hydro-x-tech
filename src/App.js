@@ -13,8 +13,12 @@ import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 
 import LoginComponent from "./components/Login"
+import DrawerComponent from "./components/Drawer"
+import SuhuGraph from "./components/Graph/Suhu"
+import AirGraph from "./components/Graph/Air"
 
 import { formLogin, formLoginIsValid } from "./formdata/formLogin";
+import { defaultOptionPH } from "./data/graphic"
 
 const EMAIL = process.env.REACT_APP_EMAIL;
 const PASSWORD = process.env.REACT_APP_PASSWORD;
@@ -26,8 +30,10 @@ const NUTRISI = process.env.REACT_APP_NUTRISI;
 const App = () => {
   const [login, setLogin] = useState(formLogin);
   const [isLogin, setIsLogin] = useState(false);
-  const [statistic, setStatistic] = useState([ { suhu: "0", nutrisi: "0", ph: "0" } ]);
+  const [statistic, setStatistic] = useState([ { sh: "0", tds: "0", ldr: "0", td: "0", ph: "0" } ]);
   const [series, setSeries] = useState([ { data: [] } ])
+  const [showDrawer, setShowDrawer] = useState(false)
+  const [client, setClient] = useState();
 
   const { email, password } = login;
 
@@ -40,24 +46,14 @@ const App = () => {
     if(isEmpty(value || "", { ignore_whitespace: true })){
       const data = {
         ...login,
-        [name]: {
-          ...login[name],
-          value: value,
-          isValid: false,
-          message: "Kolom tidak boleh kosong",
-        },
+        [name]: { ...login[name], value: value, isValid: false, message: "Kolom tidak boleh kosong", },
       };
       setLogin(data);
     } else {
       // set data ke state
       const data = {
         ...login,
-        [name]: {
-          ...login[name],
-          value: value,
-          isValid: true,
-          message: null,
-        },
+        [name]: { ...login[name], value: value, isValid: true, message: null, },
       };
       setLogin(data);
     }
@@ -77,6 +73,7 @@ const App = () => {
 
         // fungsi untuk koneksi menggunakan websocket
         const dataWS = new W3CWebSocket(`ws://${IP}`, ['arduino']);
+        setClient(dataWS); //set websocket ke state untuk digunakan saat mengubah value
 
         // fungsi untuk menerima data dari websocket
         dataWS.onmessage = message => {
@@ -87,7 +84,7 @@ const App = () => {
               for(let val of dataMsg) {
                 dataObj[val.split(":")[0]] = val.split(":")[1]
               }
-              setStatistic(data => [...data, dataObj])
+              setStatistic(data => [...data, dataObj]) // fungsi untuk update data ke state dari arduino
 
               const x = Math.floor(new Date().getTime() / 1000); // data time
               const y = dataObj['ph'] // data pH untuk grafik
@@ -110,41 +107,15 @@ const App = () => {
   }
 
   let ph = statistic.map(data => parseFloat(data.ph)) // membuat array untuk data pH
-  const suhu = statistic.map(data => data.suhu) // membuat array untuk data suhu
-  const nutrisi = statistic.map(data => parseInt(data.nutrisi)) // membuat array unutk data nutrisi
+  const suhu = statistic.map(data => parseInt(data.sh)) // membuat array untuk data suhu
+  const nutrisi = statistic.map(data => parseInt(data.tds)) // membuat array unutk data nutrisi
+  const cahaya = statistic.map(data => parseInt(data.ldr)) // membuat array unutk data intensitas cahaya
+  const ta = statistic.map(data => parseInt(data.ta)) // membuat array unutk data tinggi air
+
 
   // option konfigurasi untuk grafik
   const optionPH = {
-    chart: {
-      id: 'realtime',
-      type: 'area',
-      zoom: { enabled: false },
-      toolbar: { show: false },
-      animations: {
-        enabled: true,
-        easing: 'linear',
-        dynamicAnimation: {
-          speed: 1000
-        }
-      },
-    },
-    yaxis: { min: 0 },
-    sparkline: { enabled: true },
-    dataLabels: { enabled: false },
-    xaxis: {
-      type: 'datetime',
-      range: 10,
-      labels: { show: false },
-      axisTicks: { show: false },
-      tooltip: { enabled: false },
-    },
-    plotOptions: {
-      bar: { columnWidth: '45%', }
-    },
-    stroke: { 
-      curve: 'smooth', 
-      width: 3,
-    },
+    ...defaultOptionPH,
     title: {
       text: parseFloat(ph[ph.length - 1]) + ' pH',
       offsetX: 30,
@@ -153,21 +124,22 @@ const App = () => {
         cssClass: 'display-4'
       }
     },
-    subtitle: {
-      text: 'Power of Hydrogen',
-      offsetX: 30,
-      style: {
-        fontSize: '14px',
-        cssClass: 'apexcharts-yaxis-title'
-      }
-    },
-    colors: ['#54a0ff'],
+  }
+
+  // fungsi untuk menampilkan drawer untuk ngeset value
+  const showDrawerHandler = () => {
+    setShowDrawer(true)
+  }
+  // fungsi untuk menutup drawer untuk ngeset value
+  const closeDrawerHandler = () => {
+    setShowDrawer(false)
   }
 
   const phValue = parseFloat(ph[ph.length - 1]) // data pH terbaru
   const isOnPHUp = phValue < PH_UP // ketentuan untuk pompa pH UP menyala
   const isOnPHDown = phValue > PH_DOWN // ketentuan untuk pompa pH Down menyala
   const isOnNutrisi = parseInt(nutrisi[nutrisi.length - 1]) < NUTRISI // ketentuan untuk pompa nutrisi menyala
+
 
   // fungsi untuk mengirimkan notifikasi
   useEffect(() => {
@@ -229,6 +201,7 @@ const App = () => {
           <Container>
             <Navbar.Brand className="font-weight-bold">HYDRO X TECH</Navbar.Brand>
             <Nav className="ml-auto">
+              <Nav.Link onClick={showDrawerHandler}>Set Value</Nav.Link>
               <Nav.Link onClick={() => setIsLogin(false)}>Logout</Nav.Link>
             </Nav>
           </Container>
@@ -239,26 +212,49 @@ const App = () => {
               <Row gutter={[16, 16]}>
 
                 <Col lg={16} md={24} sm={24} xs={24}>
-                  <Card className="mb-2 h-100 shadow">
+                  <Card className="mb-2 shadow">
                     <Chart options={optionPH} series={series} height={428} />
                   </Card>
                 </Col>
 
                 <Col lg={8} md={24} sm={24} xs={24}>
                   <Card className="mb-3 shadow">
-                    <Card.Body className="p-2 h-100">
-                      <h5>Suhu</h5>
-                      <h2 className="text-center display-4">{suhu[suhu.length - 1]}°C</h2>
+                    <Card.Body className="p-2">
+                      <h5 className="mb-n2">Suhu</h5>
+                      <SuhuGraph data={parseInt(suhu[suhu.length - 1])} />
                     </Card.Body>
                   </Card>
 
                   <Card className="mb-3 shadow">
                     <Card.Body className="p-2">
-                      <h5>Nutrisi</h5>
-                      <h2 className="text-center display-4">{parseInt(nutrisi[nutrisi.length - 1])} ppm</h2>
+                      <h5>Tinggi Air</h5>
+                      <AirGraph data={parseInt(ta[ta.length - 1])} />
                     </Card.Body>
                   </Card>
 
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={8}>
+                  <Card className="mb-3 shadow h-100 p-2">
+                    <h5>Nutrisi</h5>
+                    <Card.Body className="p-2 align-items-center d-flex justify-content-center">
+                      <h2 className="text-center display-4 mb-0">{parseInt(nutrisi[nutrisi.length - 1])} ppm</h2>
+                    </Card.Body>
+                  </Card>
+                </Col>
+
+                <Col span={8}>
+                  <Card className="mb-3 shadow h-100 p-2">
+                    <h5>Intensitas Cahaya</h5>
+                    <Card.Body className="p-2 align-items-center d-flex justify-content-center">
+                      <h2 className="text-center display-4 mb-0">{parseInt(cahaya[cahaya.length - 1])} lux</h2>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                
+                <Col span={8}>
                   <Card className="shadow">
                     <Card.Body className="p-2 text-center">
                       <h5 className="text-left">Pompa</h5>
@@ -281,6 +277,13 @@ const App = () => {
           submit={submitLoginHandler} 
         />
       )}
+
+      <DrawerComponent // komponent untuk merubah setting
+        visible={showDrawer}
+        onClose={closeDrawerHandler}
+        client={client}
+      />
+
     </>
   )
 };
