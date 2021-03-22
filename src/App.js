@@ -161,8 +161,8 @@ const App = () => {
   }
 
   const phValue = parseFloat(ph[ph.length - 1]) // data pH terbaru
-  const isOnPHUp = phValue < parseFloat(ph_up.value) // ketentuan untuk pompa pH UP menyala
-  const isOnPHDown = phValue > parseFloat(ph_down.value) // ketentuan untuk pompa pH Down menyala
+  const isOnPHUp = phValue > parseFloat(ph_up.value) // ketentuan untuk pompa pH UP menyala
+  const isOnPHDown = phValue < parseFloat(ph_down.value) // ketentuan untuk pompa pH Down menyala
   const isOnNutrisi = parseInt(nutrisi[nutrisi.length - 1]) < parseInt(tds.value) // ketentuan untuk pompa nutrisi menyala
 
   useEffect(() => {
@@ -298,8 +298,8 @@ const App = () => {
                   <Card className="shadow">
                     <Card.Body className="p-2 text-center">
                       <h5 className="text-left">Pompa</h5>
-                      <p>pH Up: <Switch checkedChildren="On" unCheckedChildren="Off"  checked={isOnPHUp} /></p> 
-                      <p>pH Down: <Switch checkedChildren="On" unCheckedChildren="Off"  checked={isOnPHDown} /></p> 
+                      <p>pH Up: <Switch checkedChildren="On" unCheckedChildren="Off"  checked={isOnPHDown} /></p> 
+                      <p>pH Down: <Switch checkedChildren="On" unCheckedChildren="Off"  checked={isOnPHUp} /></p> 
                       <p>Nutrisi: <Switch checkedChildren="On" unCheckedChildren="Off"  checked={isOnNutrisi} /></p> 
                     </Card.Body>
                   </Card>
