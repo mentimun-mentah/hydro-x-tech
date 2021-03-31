@@ -23,7 +23,6 @@ import { defaultOptionPH } from "./data/graphic"
 
 const EMAIL = process.env.REACT_APP_EMAIL;
 const PASSWORD = process.env.REACT_APP_PASSWORD;
-const IP = process.env.REACT_APP_IP;
 const PH_UP = process.env.REACT_APP_PH_UP;
 const PH_DOWN = process.env.REACT_APP_PH_DOWN;
 const NUTRISI = process.env.REACT_APP_NUTRISI;
@@ -37,7 +36,7 @@ const App = () => {
   const [showDrawer, setShowDrawer] = useState(false)
   const [client, setClient] = useState();
 
-  const { email, password } = login;
+  const { email, password, ipwebsocket } = login;
   const { ph_up, ph_down, tds } = setting
 
   // Fungsi untuk mengubah value untuk login
@@ -75,7 +74,7 @@ const App = () => {
         setIsLogin(true);
 
         // fungsi untuk koneksi menggunakan websocket
-        const dataWS = new W3CWebSocket(`ws://${IP}`, ['arduino']);
+        const dataWS = new W3CWebSocket(`ws://${ipwebsocket.value}:81`, ['arduino']);
         setClient(dataWS); //set websocket ke state untuk digunakan saat mengubah value
 
         // fungsi untuk menerima data dari websocket
@@ -161,8 +160,8 @@ const App = () => {
   }
 
   const phValue = parseFloat(ph[ph.length - 1]) // data pH terbaru
-  const isOnPHUp = phValue > parseFloat(ph_up.value) // ketentuan untuk pompa pH UP menyala
-  const isOnPHDown = phValue < parseFloat(ph_down.value) // ketentuan untuk pompa pH Down menyala
+  const isOnPHUp = phValue < parseFloat(ph_up.value) // ketentuan untuk pompa pH UP menyala
+  const isOnPHDown = phValue > parseFloat(ph_down.value) // ketentuan untuk pompa pH Down menyala
   const isOnNutrisi = parseInt(nutrisi[nutrisi.length - 1]) < parseInt(tds.value) // ketentuan untuk pompa nutrisi menyala
 
   useEffect(() => {
@@ -298,8 +297,8 @@ const App = () => {
                   <Card className="shadow">
                     <Card.Body className="p-2 text-center">
                       <h5 className="text-left">Pompa</h5>
-                      <p>pH Up: <Switch checkedChildren="On" unCheckedChildren="Off"  checked={isOnPHDown} /></p> 
-                      <p>pH Down: <Switch checkedChildren="On" unCheckedChildren="Off"  checked={isOnPHUp} /></p> 
+                      <p>pH Up: <Switch checkedChildren="On" unCheckedChildren="Off"  checked={isOnPHUp} /></p> 
+                      <p>pH Down: <Switch checkedChildren="On" unCheckedChildren="Off"  checked={isOnPHDown} /></p> 
                       <p>Nutrisi: <Switch checkedChildren="On" unCheckedChildren="Off"  checked={isOnNutrisi} /></p> 
                     </Card.Body>
                   </Card>

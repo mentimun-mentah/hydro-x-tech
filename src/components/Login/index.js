@@ -8,7 +8,7 @@ import Container from "react-bootstrap/Container";
 const FormError = ({ children }) => <small className="form-text text-left text-danger mb-0">{children}</small>
 
 const LoginComponent = ({ state, onChange, submit }) => {
-  const { email, password } = state;
+  const { email, password, ipwebsocket } = state;
 
   return(
     <>
@@ -53,6 +53,19 @@ const LoginComponent = ({ state, onChange, submit }) => {
                         onChange={onChange}
                       />
                       {!password.isValid && <FormError>{password.message}</FormError>}
+                    </Form.Item>
+
+                    <Form.Item
+                      label="Ip Webscoket"
+                      className="mb-3"
+                    >
+                      <Input
+                        name="ipwebsocket"
+                        placeholder="Ip Webscoket"
+                        value={ipwebsocket.value}
+                        onChange={onChange}
+                      />
+                      {!ipwebsocket.isValid && <FormError>{ipwebsocket.message}</FormError>}
                     </Form.Item>
 
                     <Form.Item className="mb-0 float-right">
