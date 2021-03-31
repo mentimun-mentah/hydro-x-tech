@@ -241,7 +241,7 @@ const App = () => {
             </Nav>
           </Container>
         </Navbar>
-        <Layout className="bg-white mt-5">
+        <Layout className="bg-transparent mt-5">
           <Layout.Content>
             <Container>
               <Row gutter={[16, 16]}>
