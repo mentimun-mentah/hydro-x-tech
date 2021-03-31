@@ -1,0 +1,6 @@
+body {
+  background-position: right 0px bottom;
+  background-image: url("./cloud-dark.svg");
+  background-repeat: no-repeat, repeat;
+  background-color: #cccccc;
+}
