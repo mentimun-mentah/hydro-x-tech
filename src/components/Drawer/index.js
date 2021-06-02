@@ -12,7 +12,7 @@ const DrawerValueForm = ({ visible, onClose, client, setting, setSetting }) => {
 
   const onSubmit = e => {
     e.preventDefault()
-    const { ph_up, ph_down, kalibrasi_ph, kalibrasi_tds, tds } = setting
+    const { ph_up, ph_down, kalibrasi_ph, kalibrasi_tds, tds} = setting
 
     let dataString = ""
     if(ph_up.value !== "" && ph_up.value !== null) {
@@ -30,7 +30,6 @@ const DrawerValueForm = ({ visible, onClose, client, setting, setSetting }) => {
     if(tds.value !== "" && tds.value !== null) {
       dataString += "st:" + tds.value + "|"
     }
-
 
     let checkString = dataString.slice(-1)
     // check jika ada "|" pada string terakhir dan hapus jika true
@@ -122,7 +121,6 @@ const DrawerValueForm = ({ visible, onClose, client, setting, setSetting }) => {
               </Form.Item>
             </Col>
           </Row>
-
           <Row gutter={16}>
             <Col span={24}>
               <Button block type="primary" onClick={onSubmit}>Submit</Button>
